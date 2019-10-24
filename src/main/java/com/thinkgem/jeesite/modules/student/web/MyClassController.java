@@ -33,7 +33,9 @@ public class MyClassController extends BaseController {
 
 	@Autowired
 	private MyClassService myClassService;
-	
+
+	private int i;
+
 	@ModelAttribute
 	public MyClass get(@RequestParam(required=false) String id) {
 		MyClass entity = null;
