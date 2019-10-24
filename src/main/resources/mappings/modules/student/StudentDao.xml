@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.student.dao.StudentDao">
+    
+	<sql id="studentColumns">
+		a.id AS "id",
+		a.stu_name AS "stuName",
+		a.stu_gender AS "stuGender",
+		a.stu_age AS "stuAge",
+		a.class_id AS "myClass.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="studentJoins">
+		LEFT JOIN class b ON b.id = a.class_id
+	</sql>
+    
+	<select id="get" resultType="Student">
+		SELECT 
+			<include refid="studentColumns"/>
+		FROM student a
+		<include refid="studentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Student">
+		SELECT 
+			<include refid="studentColumns"/>
+		FROM student a
+		<include refid="studentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="stuName != null and stuName != ''">
+				AND a.stu_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{stuName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{stuName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{stuName},'%')</if>
+			</if>
+			<if test="stuGender != null and stuGender != ''">
+				AND a.stu_gender = #{stuGender}
+			</if>
+			<if test="myClass != null and myClass.id != null and myClass.id != ''">
+				AND a.class_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{myClass.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{myClass.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{myClass.id},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Student">
+		SELECT 
+			<include refid="studentColumns"/>
+		FROM student a
+		<include refid="studentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO student(
+			id,
+			stu_name,
+			stu_gender,
+			stu_age,
+			class_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{stuName},
+			#{stuGender},
+			#{stuAge},
+			#{myClass.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE student SET 	
+			stu_name = #{stuName},
+			stu_gender = #{stuGender},
+			stu_age = #{stuAge},
+			class_id = #{myClass.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE student SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE class_id = #{myClass.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

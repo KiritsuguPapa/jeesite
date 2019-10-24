@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.classes.dao.ClaScoreDao">
+    
+	<sql id="claScoreColumns">
+		a.id AS "id",
+		a.stu_id AS "stuId",
+		a.lesson_id AS "lessonId",
+		a.lesson_name AS "lessonName",
+		a.score AS "score",
+		a.teacher_id AS "teacherId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="claScoreJoins">
+	</sql>
+    
+	<select id="get" resultType="ClaScore">
+		SELECT 
+			<include refid="claScoreColumns"/>
+		FROM cla_score a
+		<include refid="claScoreJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ClaScore">
+		SELECT 
+			<include refid="claScoreColumns"/>
+		FROM cla_score a
+		<include refid="claScoreJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="stuId != null and stuId != ''">
+				AND a.stu_id = #{stuId}
+			</if>
+			<if test="lessonId != null and lessonId != ''">
+				AND a.lesson_id = #{lessonId}
+			</if>
+			<if test="lessonName != null and lessonName != ''">
+				AND a.lesson_name = #{lessonName}
+			</if>
+			<if test="score != null and score != ''">
+				AND a.score = #{score}
+			</if>
+			<if test="teacherId != null and teacherId != ''">
+				AND a.teacher_id = #{teacherId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ClaScore">
+		SELECT 
+			<include refid="claScoreColumns"/>
+		FROM cla_score a
+		<include refid="claScoreJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cla_score(
+			id,
+			stu_id,
+			lesson_id,
+			lesson_name,
+			score,
+			teacher_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{stuId},
+			#{lessonId},
+			#{lessonName},
+			#{score},
+			#{teacherId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cla_score SET 	
+			stu_id = #{stuId},
+			lesson_id = #{lessonId},
+			lesson_name = #{lessonName},
+			score = #{score},
+			teacher_id = #{teacherId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cla_score SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
