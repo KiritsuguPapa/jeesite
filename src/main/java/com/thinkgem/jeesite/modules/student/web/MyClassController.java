@@ -75,7 +75,6 @@ public class MyClassController extends BaseController {
 	@RequiresPermissions("student:myClass:edit")
 	@RequestMapping(value = "delete")
 	public String delete(MyClass myClass, RedirectAttributes redirectAttributes) {
-		int i=1;
 		myClassService.delete(myClass);
 		addMessage(redirectAttributes, "删除班级信息成功");
 		return "redirect:"+Global.getAdminPath()+"/student/myClass/?repage";
