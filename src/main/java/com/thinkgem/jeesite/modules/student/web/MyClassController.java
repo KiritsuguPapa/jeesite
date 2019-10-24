@@ -34,6 +34,7 @@ public class MyClassController extends BaseController {
 	@Autowired
 	private MyClassService myClassService;
 
+	
 	private int i;
 
 	@ModelAttribute
